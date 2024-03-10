@@ -9,24 +9,26 @@ namespace Rola.UI
 {
     public sealed class DisapearTextUI : MonoBehaviour
     {
-        [SerializeField] private int _displayTimeMS;
+        [SerializeField] private float _displayTimeS;
         [SerializeField] private TMP_Text _text;
         [SerializeField] private RawImage _backdrop;
 
-        private async void OnEnable()
+        private void OnEnable() => StartCoroutine(DoOnEnable());
+
+        private IEnumerator DoOnEnable()
         {
-            await Task.Delay(_displayTimeMS);
+            yield return new WaitForSeconds(_displayTimeS);
 
-            var time = 0;
+            var time = 0f;
 
-            while(time < 1000 && gameObject != null)
+            while(time < 1f && gameObject != null)
             {
-                time += 10;
+                time += Time.deltaTime;
 
                 _text.color -= new Color(0f, 0f, 0f, 0.01f);
                 _backdrop.color -= new Color(0f, 0f, 0f, 0.01f);
 
-                await Task.Delay(10);
+                yield return null;
             }
 
             gameObject.SetActive(false);

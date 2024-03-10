@@ -24,7 +24,10 @@ namespace Rola.Nodes
         {
             if(_locked)
             {
-                var temp = Instantiate(GameManager.Instance.GetLockPrefab, transform);
+                var temp = Instantiate(GameManager.Instance.GetLockPrefab, null);
+
+                temp.transform.parent = transform;
+                temp.transform.position = transform.position;
                 temp.transform.position += Vector3.up * 2f;
             }
 
@@ -56,7 +59,7 @@ namespace Rola.Nodes
             _wireStart.LookAt(pos2);
             _wireEnd.SetPositionAndRotation(pos2, _wireStart.rotation);
 
-            AnimateIn();
+            StartCoroutine(AnimateIn());
         }
 
         public void Init(Vector3 pos1)
@@ -74,10 +77,10 @@ namespace Rola.Nodes
             _wireEnd.SetPositionAndRotation(_nextNode.transform.position,
                 _wireStart.rotation);
 
-            AnimateIn();
+            StartCoroutine(AnimateIn());
         }
 
-        public override async void UpdateValue(NodeValue newValue)
+        public override void UpdateValue(NodeValue newValue)
         {
             if(_updatedRecently)
                 return;
@@ -89,7 +92,12 @@ namespace Rola.Nodes
             if(_nextNode != null)
                 _nextNode.UpdateValue(newValue);
 
-            await Task.Delay(100);
+            StartCoroutine(helpme());
+        }
+
+        private IEnumerator helpme()
+        {
+            yield return new WaitForSeconds(0.05f);
 
             _updatedRecently = false;
         }
@@ -111,25 +119,25 @@ namespace Rola.Nodes
         private void OnMouseDown() => RemoveWire();
 
         //how is it so bad
-        private async void AnimateIn()
+        private IEnumerator AnimateIn()
         {
             _animating = true;
 
-            _ = WaitCallback(200, () => _animating = false);
+            StartCoroutine(WaitCallback(0.2f, () => _animating = false));
 
             transform.position = transform.position + new Vector3(0f, 2f, 0f);
 
             while(_animating && gameObject != null)
             {
-                await Task.Delay(20);
+                yield return null;
 
-                transform.position = transform.position - new Vector3(0f, 0.2f, 0f);
+                transform.position = transform.position - new Vector3(0f, 0.1f, 0f);
             }
         }
 
-        private async Task WaitCallback(int delayms, Action callback)
+        private IEnumerator WaitCallback(float delays, Action callback)
         {
-            await Task.Delay(delayms);
+            yield return new WaitForSeconds(delays);
 
             callback.Invoke();
         }

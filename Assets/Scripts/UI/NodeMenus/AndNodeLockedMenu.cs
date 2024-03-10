@@ -14,11 +14,9 @@ namespace Rola.UI
 
         private AndNode _selectedNode;
 
-        protected override async void Awake()
+        protected override IEnumerator OnAwake()
         {
-            base.Awake();
-
-            await Task.Delay(10);
+            yield return base.OnAwake();
 
             _label.color = UIManager.RegularTextColour;
         }

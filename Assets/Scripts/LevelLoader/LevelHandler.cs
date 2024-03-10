@@ -1,3 +1,5 @@
+using Rola.Nodes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,24 +17,26 @@ namespace Rola.Levels
         private void Awake() =>
             _winConditions = GetComponentsInChildren<LevelWinCondition>();
 
-        public async void BeginLevel()
+        public IEnumerator BeginLevel(Action callback)
         {
-            var time = 0;
+            var time = 0f;
 
-            await Task.Delay(1000);
+            yield return new WaitForSeconds(1f);
 
-            while(time < 2000)
+            while(time < 2f)
             {
-                time += 20;
+                time += Time.deltaTime;
 
                 _blackscreen.color = new Color(
                     _blackscreen.color.r,
                     _blackscreen.color.g,
                     _blackscreen.color.b,
-                    Mathf.Lerp(1f, 0f, time / 2000f));
+                    Mathf.Lerp(1f, 0f, time / 2f));
 
-                await Task.Delay(20);
+                yield return null;
             }
+
+            callback.Invoke();
         }
 
         public bool EvaluateLevel()
@@ -46,22 +50,29 @@ namespace Rola.Levels
             return true;
         }
 
-        public async void DecomissionLevel()
+        public IEnumerator DecomissionLevel(Action callback)
         {
-            var time = 0;
+            LogicInNode.WaitingInput = false;
+            LogicOutNode.WaitingInput = false;
 
-            while(time < 1000)
+            var time = 0f;
+
+            while(time < 1)
             {
-                time += 20;
+                time += Time.deltaTime;
 
                 _blackscreen.color = new Color(
                     _blackscreen.color.r,
                     _blackscreen.color.g,
                     _blackscreen.color.b,
-                    Mathf.Lerp(0f, 1f, time / 1000f));
+                    Mathf.Lerp(0f, 1f, time / 1f));
 
-                await Task.Delay(20);
+                yield return null;
             }
+
+            callback.Invoke();
+
+            yield return null;
 
             Destroy(gameObject);
         }

@@ -1,6 +1,7 @@
 using Rola.Nodes;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace Rola.UI
@@ -13,6 +14,8 @@ namespace Rola.UI
         [SerializeField] private Color _redText;
         [SerializeField] private Color _greenText;
         [SerializeField] private Color _blueText;
+
+        [SerializeField] private TMP_FontAsset _font;
 
         [Header("References")]
         [SerializeField] private LevelSelectorMenu _levelSelector;
@@ -47,7 +50,10 @@ namespace Rola.UI
 
             Instance = this;
 
-            DisableAll();
+            foreach(var temp in GetComponentsInChildren<TMP_Text>(true))
+                temp.font = _font;
+
+            OpenLevelMenu();
         }
 
         public void OpenLevelMenu()

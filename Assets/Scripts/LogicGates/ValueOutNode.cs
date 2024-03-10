@@ -21,7 +21,12 @@ namespace Rola.Nodes
             base.UpdateValue(_default);
 
             if(_locked)
-                Instantiate(GameManager.Instance.GetLockPrefab, transform);
+            {
+                var temp = Instantiate(GameManager.Instance.GetLockPrefab, null);
+
+                temp.transform.parent = transform;
+                temp.transform.position = transform.position;
+            }
         }
 
         private void OnEnable() => GameManager.Instance.RegisterNode(this);

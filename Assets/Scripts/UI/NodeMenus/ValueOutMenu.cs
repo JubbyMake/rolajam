@@ -21,11 +21,9 @@ namespace Rola.UI
 
         private ValueOutNode _selectedNode;
 
-        protected override async void Awake()
+        protected override IEnumerator OnAwake()
         {
-            base.Awake();
-
-            await Task.Delay(10);
+            yield return base.OnAwake();
 
             _textR.color = UIManager.RedTextColour;
             _textG.color = UIManager.GreenTextColour;

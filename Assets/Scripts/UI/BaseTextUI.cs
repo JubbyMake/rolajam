@@ -12,9 +12,11 @@ namespace Rola.UI
         [SerializeField] private RawImage _backdrop;
         [SerializeField] private TMP_Text _title;
 
-        protected virtual async void Awake()
+        protected void Awake() => StartCoroutine(OnAwake());
+
+        protected virtual IEnumerator OnAwake()
         {
-            await Task.Delay(10);
+            yield return null;
 
             _title.color = UIManager.RegularTextColour;
             _backdrop.color = UIManager.BackdropColour;
