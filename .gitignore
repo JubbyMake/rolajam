@@ -74,9 +74,12 @@ crashlytics-build.properties
 *.meta
 *.cginc
 *.shader
+*.shadergraph
 *.asset
 *.prefab
 *.unity
+*.json
+*.png
 *.mat
 *.pdf
 *.ttf
