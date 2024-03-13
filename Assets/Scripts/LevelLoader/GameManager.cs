@@ -108,7 +108,7 @@ namespace Rola.Levels
                 }
             }
 
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if(Input.GetKeyDown(KeyCode.Tab))
             {
                 if(UIManager.Instance.OnEscPressed())
                     return;
