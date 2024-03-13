@@ -85,3 +85,5 @@ crashlytics-build.properties
 *.ttf
 *.txt
 /Assets/Scenes/SampleScene.unity
+*.mp3
+/ProjectSettings/BurstAotSettings_StandaloneWindows.json

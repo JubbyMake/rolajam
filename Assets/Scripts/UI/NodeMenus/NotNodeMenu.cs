@@ -19,6 +19,10 @@ namespace Rola.UI
             _selector.value = (int)_selectedNode.Type;
         }
 
-        public void SetNotType(int type) => _selectedNode.SetNotType(type);
+        public void SetNotType(int type)
+        {
+            _selectedNode.SetNotType(type);
+            UIManager.DoButtonSound();
+        }
     }
 }

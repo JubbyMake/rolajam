@@ -14,6 +14,7 @@ namespace Rola.UI
             GameManager.Instance.LoadLevel(level);
 
             UIManager.Instance.DisableAll();
+            UIManager.DoButtonSound();
         }
     }
 }

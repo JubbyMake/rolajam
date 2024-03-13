@@ -4,33 +4,57 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Rendering;
 
 namespace Rola.Levels
 {
     public sealed class GameManager : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] private LevelHandler[] _levels;
+        [SerializeField] private Volume _winVolume;
+        [SerializeField] private Camera _cam;
+        [SerializeField] private AudioMixer _masterGroup;
         //to save
         //no saving for jam(it doesnt do anything)
         [SerializeField] private int _levelsCompleted;
 
         [Header("Globals")]
         [SerializeField] private GameObject _wirePrefab;
-        [SerializeField] private GameObject _lockPrefab;
-        [SerializeField] private Volume _winVolume;
+        [SerializeField] private GameObject _wireSelectedEffect;
 
-        private LevelHandler _loadedLevel;
-        private int _currentLevel = 1;
-        private List<ValueOutNode> _registeredNodes = new();
-        private bool _canUnload;
+        [SerializeField] private Color _metalDefault;
+        [SerializeField] private Color _metalHovered;
+
+        [SerializeField] private GameObject _lockPrefab;
+
+        [SerializeField] private AudioClip _solved1;
+        [SerializeField] private AudioClip _solved2;
+        [SerializeField] private AudioClip _buttonPress;
+        [SerializeField] private AudioClip _plugin;
+        [SerializeField] private AudioClip _removeWire;
+        [SerializeField] private AudioClip _selectGuy;
 
         [Header("I AM TESTINTESTING")]
         [SerializeField] private int STARTLEVELTESTTEST;
 
         public static GameManager Instance { get; private set; }
-        public GameObject GetWirePrefab => _wirePrefab;
-        public GameObject GetLockPrefab => _lockPrefab;
+        public static GameObject GetWirePrefab => Instance._wirePrefab;
+        public static GameObject GetWireSelectEffect => Instance._wireSelectedEffect;
+        public static GameObject GetLockPrefab => Instance._lockPrefab;
+        public static Color GetMetalDefault => Instance._metalDefault;
+        public static Color GetMetalHovered => Instance._metalHovered;
+
+        public static AudioClip GetButtonPress => Instance._buttonPress;
+        public static AudioClip GetPlugin => Instance._plugin;
+        public static AudioClip GetSelectGuy => Instance._selectGuy;
+        public static AudioClip GetRemoveWire => Instance._removeWire;
+
+        private LevelHandler _loadedLevel;
+        private int _currentLevel = 1;
+        private List<ValueOutNode> _registeredNodes = new();
+        private bool _canUnload, _isMuted;
 
         private void Awake()
         {
@@ -66,8 +90,23 @@ namespace Rola.Levels
             if(Input.GetKeyDown(KeyCode.R))
                 LoadLevel(_currentLevel);
 
-            if(Input.GetKeyDown(KeyCode.Return) && _loadedLevel != null)
+            if((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+                && _loadedLevel != null)
                 EvaluateCurrentLevel();
+
+            if(Input.GetKeyDown(KeyCode.M))
+            {
+                if(_isMuted)
+                {
+                    _masterGroup.SetFloat("_volumeMaster", -9f);
+                    _isMuted = false;
+                }
+                else
+                {
+                    _masterGroup.SetFloat("_volumeMaster", 0f);
+                    _isMuted = true;
+                }
+            }
 
             if(Input.GetKeyDown(KeyCode.Escape))
             {
@@ -95,6 +134,19 @@ namespace Rola.Levels
                 return;
 
             _canUnload = false;
+
+            if(level == 6)
+            {
+                BGMHandler.Instance.StopNow();
+
+                var temp = AudioPool.GetSource();
+
+                temp.Stop();
+
+                temp.clip = _solved2;
+                temp.pitch = 0.75f;
+                temp.gameObject.SetActive(true);
+            }
 
             if(_loadedLevel != null)
             {
@@ -145,7 +197,8 @@ namespace Rola.Levels
             if(!_canUnload)
                 return;
 
-            UIManager.Instance.DisableAll();
+            if(!UIManager.Instance.IsLevelSelect)
+                UIManager.Instance.DisableAll();
 
             if(_loadedLevel != null)
                 StartCoroutine(_loadedLevel.DecomissionLevel(() =>
@@ -154,6 +207,8 @@ namespace Rola.Levels
                     _loadedLevel = null;
                     UIManager.Instance.OpenLevelMenu();
                 }));
+
+            BGMHandler.Instance.StartBGM();
         }
 
         private IEnumerator CurrentLevelComplete()
@@ -170,16 +225,28 @@ namespace Rola.Levels
 
                 _winVolume.weight = Mathf.Lerp(0f, 1f, time / 1f);
 
+                _cam.fieldOfView = Mathf.SmoothStep(21f, 45f, time / 2f);
+
                 yield return null;
             }
 
-            time = 0;
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = _solved1;
+            temp.volume = 0.6f;
+            temp.gameObject.SetActive(true);
+
+            time = 0f;
 
             while(time < 1f)
             {
                 time += Time.deltaTime;
 
                 _winVolume.weight = Mathf.Lerp(1f, 0f, time / 1f);
+
+                _cam.fieldOfView = Mathf.SmoothStep(45f, 2000f, time / 1f);
 
                 yield return null;
             }
@@ -188,6 +255,9 @@ namespace Rola.Levels
             {
                 _canUnload = true;
                 _loadedLevel = null;
+
+                _cam.fieldOfView = 21f;
+
                 LoadLevel(++_currentLevel);
             }));
             /*

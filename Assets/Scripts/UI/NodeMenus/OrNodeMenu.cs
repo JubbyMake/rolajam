@@ -33,10 +33,16 @@ namespace Rola.UI
             _toggleExclusive.isOn = _selectedNode.IsExclusive;
         }
 
-        public void ChangeLogical(bool isLogical) =>
+        public void ChangeLogical(bool isLogical)
+        {
             _selectedNode.SetLogical(isLogical);
+            UIManager.DoButtonSound();
+        }
 
-        public void ChangeExclusive(bool isExclusive) =>
+        public void ChangeExclusive(bool isExclusive)
+        {
             _selectedNode.SetExclusive(isExclusive);
+            UIManager.DoButtonSound();
+        }
     }
 }

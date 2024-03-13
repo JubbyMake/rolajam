@@ -20,10 +20,12 @@ namespace Rola.Nodes
         {
             if(_locked)
             {
-                var temp = Instantiate(GameManager.Instance.GetLockPrefab, null);
+                var temp = Instantiate(GameManager.GetLockPrefab, null);
 
                 temp.transform.parent = transform;
                 temp.transform.position = transform.position;
+
+                temp.transform.LookAt(transform.position + new Vector3(0f, 0f, -100f));
             }
         }
 

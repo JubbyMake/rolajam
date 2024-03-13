@@ -24,11 +24,13 @@ namespace Rola.Nodes
         {
             if(_locked)
             {
-                var temp = Instantiate(GameManager.Instance.GetLockPrefab, null);
+                var temp = Instantiate(GameManager.GetLockPrefab, null);
 
                 temp.transform.parent = transform;
                 temp.transform.position = transform.position;
                 temp.transform.position += Vector3.up * 2f;
+
+                temp.transform.LookAt(transform.position + new Vector3(0f, 0f, -100f));
             }
 
             if(_nextNode != null && _nextNode.IsConnected)
@@ -58,6 +60,14 @@ namespace Rola.Nodes
             _wireStart.position = pos1;
             _wireStart.LookAt(pos2);
             _wireEnd.SetPositionAndRotation(pos2, _wireStart.rotation);
+
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = GameManager.GetPlugin;
+            temp.volume = 0.35f;
+            temp.gameObject.SetActive(true);
 
             StartCoroutine(AnimateIn());
         }
@@ -106,6 +116,14 @@ namespace Rola.Nodes
         {
             if(_locked)
                 return;
+
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = GameManager.GetRemoveWire;
+            temp.volume = 0.3f;
+            temp.gameObject.SetActive(true);
 
             if(_nextNode != null)
             {

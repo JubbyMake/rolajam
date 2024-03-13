@@ -1,3 +1,4 @@
+using Rola.Levels;
 using Rola.Nodes;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ namespace Rola.UI
         private bool _isInspecting = false;
 
         public static UIManager Instance { get; private set; }
+        public bool IsLevelSelect { get; private set; }
 
         public static Color RegularTextColour => Instance._regularText;
         public static Color RedTextColour => Instance._redText;
@@ -60,6 +62,7 @@ namespace Rola.UI
         {
             DisableAll();
 
+            IsLevelSelect = true;
             _levelSelector.gameObject.SetActive(true);
         }
 
@@ -67,6 +70,7 @@ namespace Rola.UI
         public void EditAndNode(AndNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _andNodeMenu.gameObject.SetActive(true);
@@ -76,6 +80,7 @@ namespace Rola.UI
         public void EditAndNodeLocked(AndNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _andNodeLockedMenu.gameObject.SetActive(true);
@@ -85,6 +90,7 @@ namespace Rola.UI
         public void EditNotNode(NotNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _notNodeMenu.gameObject.SetActive(true);
@@ -94,6 +100,7 @@ namespace Rola.UI
         public void EditNotNodeLocked(NotNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _notNodeLockedMenu.gameObject.SetActive(true);
@@ -103,6 +110,7 @@ namespace Rola.UI
         public void EditOrNode(OrNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _orNodeMenu.gameObject.SetActive(true);
@@ -112,6 +120,7 @@ namespace Rola.UI
         public void EditOrNodeLocked(OrNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _orNodeLockedMenu.gameObject.SetActive(true);
@@ -121,6 +130,7 @@ namespace Rola.UI
         public void EditSwitch(SwitchNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _switchMenu.gameObject.SetActive(true);
@@ -130,6 +140,7 @@ namespace Rola.UI
         public void EditSwitchLocked(SwitchNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _switchLockedMenu.gameObject.SetActive(true);
@@ -139,6 +150,7 @@ namespace Rola.UI
         public void EditAbsorb(ValueAbsorbNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _absorbMenu.gameObject.SetActive(true);
@@ -148,6 +160,7 @@ namespace Rola.UI
         public void EditValueIn(ValueInNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _valueInMenu.gameObject.SetActive(true);
@@ -157,6 +170,7 @@ namespace Rola.UI
         public void EditValueOut(ValueOutNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _valueOutMenu.gameObject.SetActive(true);
@@ -166,6 +180,7 @@ namespace Rola.UI
         public void EditValueOutLocked(ValueOutNode node)
         {
             DisableAll();
+            DoSelectedSound();
 
             _isInspecting = true;
             _valueOutLockedMenu.gameObject.SetActive(true);
@@ -175,7 +190,7 @@ namespace Rola.UI
 
         public void DisableAll()
         {
-            _isInspecting = false;
+            _isInspecting = IsLevelSelect = false;
 
             _levelSelector.gameObject.SetActive(false);
 
@@ -202,6 +217,29 @@ namespace Rola.UI
             }
 
             return false;
+        }
+
+        public static void DoButtonSound()
+        {
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = GameManager.GetButtonPress;
+            temp.pitch = 0.9f;
+            temp.gameObject.SetActive(true);
+        }
+
+        private void DoSelectedSound()
+        {
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = GameManager.GetSelectGuy;
+            temp.volume = 0.4f;
+            temp.gameObject.SetActive(true);
+
         }
     }
 }

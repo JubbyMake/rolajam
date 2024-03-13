@@ -25,8 +25,15 @@ namespace Rola.UI
             {
                 time += Time.deltaTime;
 
-                _text.color -= new Color(0f, 0f, 0f, 0.01f);
-                _backdrop.color -= new Color(0f, 0f, 0f, 0.01f);
+                _text.color = new Color(_text.color.r,
+                    _text.color.g,
+                    _text.color.b,
+                    Mathf.Lerp(1f, 0f, time / 1f));
+
+                _backdrop.color = new Color(_backdrop.color.r,
+                    _backdrop.color.g,
+                    _backdrop.color.b,
+                    Mathf.Lerp(1f, 0f, time / 1f));
 
                 yield return null;
             }

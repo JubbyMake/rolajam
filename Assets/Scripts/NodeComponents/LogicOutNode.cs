@@ -9,7 +9,11 @@ namespace Rola.Nodes
     public sealed class LogicOutNode : Node
     {
         [SerializeField] private Wire _outWire;
+        [SerializeField] private MeshRenderer _nodeMesh;
 
+        private bool _isHovered;
+
+        public static ParticleSystem ClickedEffect;
         public static bool WaitingInput = false;
         public static LogicOutNode Current = null;
 
@@ -35,6 +39,14 @@ namespace Rola.Nodes
             WaitingInput = true;
             Current = this;
 
+            var temp = AudioPool.GetSource();
+
+            temp.Stop();
+
+            temp.clip = GameManager.GetButtonPress;
+            temp.volume = 1f;
+            temp.gameObject.SetActive(true);
+
             if(LogicInNode.WaitingInput)
             {
                 CreateWire(LogicInNode.Current);
@@ -44,12 +56,82 @@ namespace Rola.Nodes
 
                 LogicInNode.WaitingInput = false;
                 LogicInNode.Current = null;
+
+                if(ClickedEffect != null)
+                {
+                    ClickedEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+                    ClickedEffect = null;
+                }
+
+                if(LogicInNode.ClickedEffect != null)
+                {
+                    LogicInNode.ClickedEffect.Stop(true,
+                        ParticleSystemStopBehavior.StopEmitting);
+
+                    LogicInNode.ClickedEffect = null;
+                }
+
+                return;
             }
+
+            OnClickedEffect();
+        }
+
+        private void OnMouseEnter()
+        {
+            _isHovered = true;
+
+            OnMouseOverEffect();
+        }
+
+        private void OnMouseOver()
+        {
+            if(_isHovered)
+                return;
+
+            _isHovered = true;
+
+            OnMouseOverEffect();
+        }
+
+        private void OnMouseExit()
+        {
+            _isHovered = false;
+
+            if(_nodeMesh == null)
+                return;
+
+            _nodeMesh.material.SetColor("_EmissionColor",
+                GameManager.GetMetalDefault);
+        }
+
+        private void OnMouseOverEffect()
+        {
+            if(_nodeMesh == null)
+                return;
+
+            _nodeMesh.material.SetColor("_EmissionColor",
+                GameManager.GetMetalHovered);
+        }
+
+        private void OnClickedEffect()
+        {
+            if(ClickedEffect != null)
+            {
+                ClickedEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+                ClickedEffect = null;
+            }
+
+            ClickedEffect = Instantiate(GameManager.GetWireSelectEffect,
+                transform).GetComponent<ParticleSystem>();
+            ClickedEffect.transform.position += Vector3.up;
         }
 
         public void CreateWire(LogicInNode next)
         {
-            var temp = Instantiate(GameManager.Instance.GetWirePrefab,
+            var temp = Instantiate(GameManager.GetWirePrefab,
                 transform)
                 .GetComponent<Wire>();
 

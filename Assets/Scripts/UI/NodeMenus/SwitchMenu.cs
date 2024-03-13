@@ -37,6 +37,10 @@ namespace Rola.UI
             _selector.value = (int)_selectedNode.SwitchType;
         }
 
-        public void SetSwitchType(int type) => _selectedNode.SetSwitchType(type);
+        public void SetSwitchType(int type)
+        {
+            _selectedNode.SetSwitchType(type);
+            UIManager.DoButtonSound();
+        }
     }
 }

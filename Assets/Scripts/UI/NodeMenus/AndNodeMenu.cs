@@ -29,6 +29,11 @@ namespace Rola.UI
             _toggle.isOn = _selectedNode.IsLogical;
         }
 
-        public void ChangeLogical(bool isLogical) => _selectedNode.SetLogical(isLogical);
+        public void ChangeLogical(bool isLogical)
+        {
+            _selectedNode.SetLogical(isLogical);
+
+            UIManager.DoButtonSound();
+        }
     }
 }

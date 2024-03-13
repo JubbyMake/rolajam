@@ -20,6 +20,7 @@ namespace Rola.UI
         [SerializeField] private Slider _sliderB;
 
         private ValueOutNode _selectedNode;
+        private bool _soundRecharged = true;
 
         protected override IEnumerator OnAwake()
         {
@@ -48,6 +49,12 @@ namespace Rola.UI
                 _selectedNode.GetValue.Green,
                 _selectedNode.GetValue.Blue));
 
+            if(_soundRecharged)
+            {
+                UIManager.DoButtonSound();
+                StartCoroutine(ReloadSound());
+            }
+
             UpdateValues();
         }
 
@@ -57,6 +64,12 @@ namespace Rola.UI
                 _selectedNode.GetValue.Red,
                 (float)Math.Round(green, 1),
                 _selectedNode.GetValue.Blue));
+
+            if(_soundRecharged)
+            {
+                UIManager.DoButtonSound();
+                StartCoroutine(ReloadSound());
+            }
 
             UpdateValues();
         }
@@ -68,6 +81,12 @@ namespace Rola.UI
                 _selectedNode.GetValue.Green,
                 (float)Math.Round(blue, 1)));
 
+            if(_soundRecharged)
+            {
+                UIManager.DoButtonSound();
+                StartCoroutine(ReloadSound());
+            }
+
             UpdateValues();
         }
 
@@ -76,6 +95,15 @@ namespace Rola.UI
             _textR.text = _selectedNode.GetValue.Red.ToString();
             _textG.text = _selectedNode.GetValue.Green.ToString();
             _textB.text = _selectedNode.GetValue.Blue.ToString();
+        }
+
+        private IEnumerator ReloadSound()
+        {
+            _soundRecharged = false;
+
+            yield return new WaitForSeconds(0.05f);
+
+            _soundRecharged = true;
         }
     }
 }
